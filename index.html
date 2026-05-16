@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="職場でのSNS投稿前に、まず確認したい項目をまとめた開発中の無料版チェックリストです。">
+  <title>職場SNS チェックリスト</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #071120;
+      --bg-soft: #0d1b2f;
+      --card: #10233d;
+      --card-strong: #132a49;
+      --text: #f5f9ff;
+      --muted: #b7c7dc;
+      --line: rgba(178, 207, 255, 0.16);
+      --accent: #43a7ff;
+      --accent-strong: #62c7ff;
+      --accent-soft: rgba(67, 167, 255, 0.16);
+      --success: #6ee7b7;
+      --shadow: 0 22px 60px rgba(0, 0, 0, 0.32);
+      --radius: 22px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--bg);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(67, 167, 255, 0.22), transparent 28rem),
+        radial-gradient(circle at 86% 18%, rgba(98, 199, 255, 0.12), transparent 22rem),
+        linear-gradient(180deg, #071120 0%, #09172a 52%, #06101d 100%);
+      line-height: 1.7;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .page {
+      width: min(100%, 760px);
+      margin: 0 auto;
+      padding: 28px 18px 36px;
+    }
+
+    .hero {
+      padding: 14px 2px 22px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--accent-strong);
+      background: rgba(13, 27, 47, 0.76);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .badge::before {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 16px var(--accent);
+      content: "";
+    }
+
+    h1 {
+      margin: 18px 0 10px;
+      font-size: clamp(2rem, 9vw, 3.4rem);
+      line-height: 1.12;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle,
+    .notice,
+    .note-copy,
+    .disclaimer {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .subtitle {
+      margin: 0;
+    }
+
+    .notice {
+      margin-top: 20px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(13, 27, 47, 0.7);
+    }
+
+    .notice strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text);
+      font-size: 0.92rem;
+    }
+
+    .app-card,
+    .note-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(16, 35, 61, 0.96), rgba(10, 24, 43, 0.96));
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .tabs {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      background: rgba(3, 11, 22, 0.34);
+    }
+
+    .tab-button {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid transparent;
+      border-radius: 15px;
+      color: var(--muted);
+      background: transparent;
+      font: inherit;
+      font-size: 0.92rem;
+      font-weight: 800;
+      text-align: left;
+      cursor: pointer;
+      transition: 160ms ease;
+    }
+
+    .tab-button span {
+      display: block;
+      padding: 12px 13px;
+    }
+
+    .tab-button[aria-selected="true"] {
+      border-color: rgba(67, 167, 255, 0.38);
+      color: var(--text);
+      background: var(--accent-soft);
+      box-shadow: inset 0 0 0 1px rgba(98, 199, 255, 0.1);
+    }
+
+    .panel {
+      display: none;
+      padding: 20px 16px 18px;
+    }
+
+    .panel.is-active {
+      display: block;
+    }
+
+    .panel-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 1.08rem;
+      line-height: 1.4;
+    }
+
+    .counter {
+      flex: 0 0 auto;
+      padding: 5px 10px;
+      border-radius: 999px;
+      color: var(--accent-strong);
+      background: rgba(67, 167, 255, 0.13);
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .progress-wrap {
+      margin-bottom: 18px;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(245, 249, 255, 0.1);
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+      box-shadow: 0 0 18px rgba(67, 167, 255, 0.42);
+      transition: width 220ms ease;
+    }
+
+    .checklist {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .check-item {
+      display: grid;
+      grid-template-columns: 30px 1fr;
+      gap: 12px;
+      width: 100%;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      color: var(--text);
+      background: rgba(245, 249, 255, 0.045);
+      font: inherit;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+    }
+
+    .check-item:active {
+      transform: scale(0.99);
+    }
+
+    .check-icon {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border: 2px solid rgba(183, 199, 220, 0.62);
+      border-radius: 10px;
+      color: transparent;
+      line-height: 1;
+      transition: 160ms ease;
+    }
+
+    .check-item[aria-pressed="true"] {
+      border-color: rgba(110, 231, 183, 0.42);
+      background: rgba(110, 231, 183, 0.1);
+    }
+
+    .check-item[aria-pressed="true"] .check-icon {
+      border-color: var(--success);
+      color: #04111d;
+      background: var(--success);
+    }
+
+    .complete-message {
+      display: none;
+      margin: 16px 0 0;
+      padding: 13px 14px;
+      border: 1px solid rgba(110, 231, 183, 0.3);
+      border-radius: 16px;
+      color: #d9fff0;
+      background: rgba(110, 231, 183, 0.11);
+      font-weight: 800;
+    }
+
+    .complete-message.is-visible {
+      display: block;
+    }
+
+    .actions {
+      margin-top: 18px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .reset-button {
+      border: 1px solid rgba(183, 199, 220, 0.22);
+      border-radius: 999px;
+      color: var(--text);
+      background: rgba(245, 249, 255, 0.06);
+      padding: 10px 14px;
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .note-card {
+      margin-top: 18px;
+      padding: 18px;
+    }
+
+    .note-label {
+      margin: 0 0 6px;
+      color: var(--accent-strong);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .note-copy {
+      margin: 0 0 15px;
+    }
+
+    .note-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 50px;
+      padding: 12px 18px;
+      border-radius: 16px;
+      color: #03101f;
+      background: linear-gradient(135deg, var(--accent-strong), var(--accent));
+      font-weight: 900;
+      text-decoration: none;
+      box-shadow: 0 12px 28px rgba(67, 167, 255, 0.24);
+    }
+
+    .disclaimer {
+      margin: 14px 2px 0;
+      font-size: 0.82rem;
+    }
+
+    @media (min-width: 620px) {
+      .page {
+        padding-top: 44px;
+      }
+
+      .tabs {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .panel {
+        padding: 24px;
+      }
+
+      .note-card {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 18px;
+        padding: 22px 24px;
+      }
+
+      .note-copy {
+        margin-bottom: 0;
+      }
+
+      .note-button {
+        width: auto;
+        min-width: 210px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="badge">開発中の無料ライト版</div>
+      <h1>職場SNS チェックリスト</h1>
+      <p class="subtitle">職場でのSNS投稿前に、まず確認したい項目をまとめた開発中の無料版です。</p>
+      <div class="notice" role="note">
+        <strong>ご利用前に</strong>
+        このWeb版は、チェックリストの一部を確認できる簡易版です。<br>
+        完全版のチェックリスト・実例・初動対応・謝罪文テンプレートはnote記事に掲載しています。
+      </div>
+    </header>
+
+    <section class="app-card" aria-label="職場SNSチェックリスト無料版">
+      <div class="tabs" role="tablist" aria-label="チェックリストの種類">
+        <button class="tab-button" id="tab-employee" type="button" role="tab" aria-selected="true" aria-controls="panel-employee" data-tab="employee">
+          <span>従業員用：投稿前チェック</span>
+        </button>
+        <button class="tab-button" id="tab-manager" type="button" role="tab" aria-selected="false" aria-controls="panel-manager" data-tab="manager">
+          <span>管理職用：初動対応チェック</span>
+        </button>
+      </div>
+
+      <section class="panel is-active" id="panel-employee" role="tabpanel" aria-labelledby="tab-employee" data-panel="employee">
+        <div class="panel-heading">
+          <h2 class="panel-title">投稿前に、写真や動画の映り込みを確認</h2>
+          <div class="counter" aria-live="polite"><span data-count>0</span>/3</div>
+        </div>
+        <div class="progress-wrap" aria-label="従業員用チェックの進捗">
+          <div class="progress-meta"><span>進捗</span><span data-percent>0%</span></div>
+          <div class="progress-track"><div class="progress-bar" data-progress></div></div>
+        </div>
+        <ul class="checklist">
+          <li><button class="check-item" type="button" aria-pressed="false"><span class="check-icon">✓</span><span>社員証・名札が映り込んでいない</span></button></li>
+          <li><button class="check-item" type="button" aria-pressed="false"><span class="check-icon">✓</span><span>PC画面・ホワイトボードが映り込んでいない</span></button></li>
+          <li><button class="check-item" type="button" aria-pressed="false"><span class="check-icon">✓</span><span>同僚・上司・お客様の顔が無断で映っていない</span></button></li>
+        </ul>
+        <p class="complete-message" data-complete aria-live="polite">この簡易チェックは完了です。必要に応じて、投稿内容をもう一度見直してください。</p>
+        <div class="actions"><button class="reset-button" type="button" data-reset>リセット</button></div>
+      </section>
+
+      <section class="panel" id="panel-manager" role="tabpanel" aria-labelledby="tab-manager" data-panel="manager">
+        <div class="panel-heading">
+          <h2 class="panel-title">気づいた直後に、落ち着いて事実を整理</h2>
+          <div class="counter" aria-live="polite"><span data-count>0</span>/3</div>
+        </div>
+        <div class="progress-wrap" aria-label="管理職用チェックの進捗">
+          <div class="progress-meta"><span>進捗</span><span data-percent>0%</span></div>
+          <div class="progress-track"><div class="progress-bar" data-progress></div></div>
+        </div>
+        <ul class="checklist">
+          <li><button class="check-item" type="button" aria-pressed="false"><span class="check-icon">✓</span><span>何が映っていたか確認した</span></button></li>
+          <li><button class="check-item" type="button" aria-pressed="false"><span class="check-icon">✓</span><span>必要に応じて、上司・関係部署へ報告した</span></button></li>
+          <li><button class="check-item" type="button" aria-pressed="false"><span class="check-icon">✓</span><span>本人を責める前に、事実確認を行った</span></button></li>
+        </ul>
+        <p class="complete-message" data-complete aria-live="polite">この簡易チェックは完了です。必要に応じて、社内ルールや関係部署の確認も行ってください。</p>
+        <div class="actions"><button class="reset-button" type="button" data-reset>リセット</button></div>
+      </section>
+    </section>
+
+    <aside class="note-card" aria-label="note記事への案内">
+      <div>
+        <p class="note-label">noteで続きを確認</p>
+        <p class="note-copy">チェックリスト完全版・実例・初動対応・謝罪文テンプレートを掲載</p>
+      </div>
+      <a class="note-button" href="https://note.com/reality_40s/n/n689aa396ccf9" target="_blank" rel="noopener noreferrer">完全版をnoteで読む</a>
+    </aside>
+
+    <p class="disclaimer">※この無料版は一般的な確認のきっかけとして作成したものです。法務判断・コンプライアンス判断が必要な場合は、社内規程や専門部署の確認を優先してください。</p>
+  </main>
+
+  <script>
+    const tabButtons = document.querySelectorAll('[role="tab"]');
+    const panels = document.querySelectorAll('[data-panel]');
+
+    function updatePanel(panel) {
+      const items = panel.querySelectorAll('.check-item');
+      const checked = panel.querySelectorAll('.check-item[aria-pressed="true"]').length;
+      const total = items.length;
+      const percent = total === 0 ? 0 : Math.round((checked / total) * 100);
+
+      panel.querySelector('[data-count]').textContent = checked;
+      panel.querySelector('[data-percent]').textContent = `${percent}%`;
+      panel.querySelector('[data-progress]').style.width = `${percent}%`;
+      panel.querySelector('[data-complete]').classList.toggle('is-visible', checked === total);
+    }
+
+    tabButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const target = button.dataset.tab;
+
+        tabButtons.forEach((tab) => {
+          tab.setAttribute('aria-selected', String(tab === button));
+        });
+
+        panels.forEach((panel) => {
+          panel.classList.toggle('is-active', panel.dataset.panel === target);
+        });
+      });
+    });
+
+    panels.forEach((panel) => {
+      panel.querySelectorAll('.check-item').forEach((item) => {
+        item.addEventListener('click', () => {
+          const isChecked = item.getAttribute('aria-pressed') === 'true';
+          item.setAttribute('aria-pressed', String(!isChecked));
+          updatePanel(panel);
+        });
+      });
+
+      panel.querySelector('[data-reset]').addEventListener('click', () => {
+        panel.querySelectorAll('.check-item').forEach((item) => {
+          item.setAttribute('aria-pressed', 'false');
+        });
+        updatePanel(panel);
+      });
+
+      updatePanel(panel);
+    });
+  </script>
+</body>
+</html>
